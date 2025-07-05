@@ -9,18 +9,21 @@ export default defineConfig({
   base: "/app/",
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(new URL(".", import.meta.url).pathname, "./src"),
     },
   },
   server: {
+    // 1. Expose server to all network interfaces
+    host: "0.0.0.0",
     proxy: {
       // Proxy API requests to the backend server
       "/api": {
-        target: "http://127.0.0.1:8000", // Default backend address
+        // 2. Corrected port for the development server
+        target: "http://127.0.0.1:2024",
         changeOrigin: true,
-        // Optionally rewrite path if needed (e.g., remove /api prefix if backend doesn't expect it)
-        // rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
+    // 3. Allow requests from any Replit preview URL
+    allowedHosts: [".replit.dev"],
   },
 });
